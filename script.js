@@ -69,7 +69,7 @@ function createModel () {
     // Add one single input layer
     model.add(tf.layers.dense({inputShape:[1], units:1, useBias: true}));
 
-    // a hidden layer
+    // Add a hidden layer
     model.add(tf.layers.dense({units: 50, activation: 'sigmoid'}))
 
     // Add an output Layer
