@@ -153,10 +153,6 @@ function testModel(model, inputData, normalizationData) {
             height: 300
         }
     )
-    console.log("Original Points: ", originalPoints);
-    tfvis.render.barchart(
-        {name: 'Original Data'},
-        {values: originalPoints})
 }
 
 async function run() {
