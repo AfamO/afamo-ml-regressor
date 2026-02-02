@@ -2,6 +2,18 @@
 console.log("Hello TensorFlow");
 console.log("Hello PyTorch");
 
+const tensor = tf.tensor([1,2,3,4])
+console.log(tensor);
+console.log(tensor.shape);
+console.log(tensor.dtype);
+console.log(tensor.rank)
+console.log(tensor.size);
+console.log("Printing tensor values:");
+tensor.print();
+const str = tf.tensor(['Hello', 'TensorFlow', 'JS']);
+str.print();
+
+
 /**
  * Get the car data, map to only the variables we are interested in
  * and clean any missing data
@@ -131,6 +143,7 @@ function testModel(model, inputData, normalizationData) {
         x: d.horsepower, y: d.mpg,
     }));
 
+    // Plot scatter plot to compare original data and model predictions
     tfvis.render.scatterplot(
         {name: 'Model Predictions vs Original Data'},
         {values: [originalPoints, predictedPoints], series: ['original', 'predicted']},
@@ -140,7 +153,10 @@ function testModel(model, inputData, normalizationData) {
             height: 300
         }
     )
-
+    console.log("Original Points: ", originalPoints);
+    tfvis.render.barchart(
+        {name: 'Original Data'},
+        {values: originalPoints})
 }
 
 async function run() {
@@ -151,8 +167,9 @@ async function run() {
         y: d.mpg,
     }));
     
+    // Scatter plot of horsepower vs MPG
     tfvis.render.scatterplot(
-        {name: 'Horsepower vs MPG'},
+        {name: 'Scatter plot of Horsepower vs MPG'},
         {values},
         {
             xLabel: 'Horsepower',
@@ -160,7 +177,7 @@ async function run() {
             height: 300
         }
     );
-   
+
     // create the model
     const model = createModel();
     tfvis.show.modelSummary({name: 'Model Summary'}, model);
@@ -173,7 +190,45 @@ async function run() {
 
     // Make some predictions using the model and compare them to the original data
     testModel(model, data, tensorData);
+     
+    // Prepare the data and convert to appropriate format for barchart
+    const barchartValues = data.map((d, i) =>({
+        index: i,
+        value: d.mpg,
+    }));
+    
+    // Show a barchart of the MPG values
+    tfvis.render.barchart(
+        {name: 'Bar Chart of the MPG values'},
+        barchartValues, {height: 300, width: 800, fontSize:16,xLabel:"Index", yLabel:"MPG"}, series=['mpg']
+    )
+    // Show a line chart of the MPG values
+    tfvis.render.linechart(
+        {name: 'Sample Line Chart'},
+        {values,series: ['mpg']},
+        {
+            xLabel: 'Horsepower',
+            yLabel: 'MPG',
+            height: 1000,
+            width: 800,
+        }
+    );
+    const myData = [
+        {index: "Akon", value:10},
+        {index:"Ciga", value:20},
+        {index:"Igbo", value:30}
+    ]
+    tfvis.render.barchart({name:"Bar char of the Student's Age"},myData, {xLabel:"User", yLabel:"Age"});
+    const histData = data
+    .map(d => d.horsepower);
+    console.log("my histData=="+histData)
 
+    tfvis.render.histogram({name:"Histogram of the car's MPG"},
+        histData,{
+            maxBin:5,
+            height:450,
+            fontSize:16
+        })
     
 }
 
