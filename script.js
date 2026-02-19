@@ -1,26 +1,27 @@
 
 console.log("Hello TensorFlow");
-console.log("Hello PyTorch");
-
-const tensor = tf.tensor([1,2,3,4])
-console.log(tensor);
-console.log(tensor.shape);
-console.log(tensor.dtype);
-console.log(tensor.rank)
-console.log(tensor.size);
+const tensor = tf.tensor([1,2,3,4]) // create a 1-D tensor
+console.log(tensor); // print it
+console.log(tensor.shape); // find the shape of the tensor
+console.log(tensor.dtype); // find the data type of the tensor
+console.log(tensor.rank) // find the rank of the tensor (number of dimensions)
+console.log(tensor.size); // find the size
 console.log("Printing tensor values:");
-tensor.print();
+tensor.print(); // print the values of the tensor in a nice format
+// Create a 2-D tensor
 const str = tf.tensor(['Hello', 'TensorFlow', 'JS']);
-str.print();
+str.print(); // print the string tensor
 
 
 /**
- * Get the car data, map to only the variables we are interested in
+ * Get the car data, map to only the variables 
+ * we are interested in
  * and clean any missing data
- * @returns 
  */
-async function loadData() {
-    const carsDataResponse = await fetch ("https://storage.googleapis.com/tfjs-tutorials/carsData.json");
+async function loadData() { // async is for asynchronous code, 
+// it allows us to use the await keyword inside the function
+    const carsDataResponse = await fetch 
+    ("https://storage.googleapis.com/tfjs-tutorials/carsData.json");
     const carsData = await carsDataResponse.json();
     const cleaned = carsData.map(car=>({
         mpg: car.Miles_per_Gallon,
@@ -29,6 +30,8 @@ async function loadData() {
     .filter(car=> (car.mpg != null && car.horsepower != null));
     return cleaned;
 }
+
+
 
 /**
  * Convert input data to tensors that we can use for the ML training
@@ -45,7 +48,6 @@ function convertToTensor(data) {
         // Step 2: Convert the data to Tensor
         const x_inputs = data.map((d)=> d.horsepower);
         const y_lables= data.map((d)=>d.mpg);
-
         const inputTensor = tf.tensor2d(x_inputs, [x_inputs.length, 1]);
         const labelTensor = tf.tensor2d(y_lables,[y_lables.length, 1]);
 
@@ -57,10 +59,8 @@ function convertToTensor(data) {
         const inputMin = inputTensor.min();
         const labelMax = labelTensor.max();
         const labelMin = labelTensor.min();
-
         const normalizeInputs = inputTensor.sub(inputMin).div(inputMax.sub(inputMin));
         const normalizedLabels = labelTensor.sub(labelMin).div(labelMax.sub(labelMin));
-
         return {
             inputs: normalizeInputs,
             labels: normalizedLabels,
@@ -162,7 +162,6 @@ async function run() {
         x: d.horsepower,
         y: d.mpg,
     }));
-    
     // Scatter plot of horsepower vs MPG
     tfvis.render.scatterplot(
         {name: 'Scatter plot of Horsepower vs MPG'},
@@ -173,21 +172,21 @@ async function run() {
             height: 300
         }
     );
-
     // create the model
-    const model = createModel();
-    tfvis.show.modelSummary({name: 'Model Summary'}, model);
+    //const model = createModel();
+    //tfvis.show.modelSummary({name: 'Model Summary'}, model);
     const tensorData =  convertToTensor(data);
     const {inputs, labels} = tensorData;
 
     //Train the model
-    await trainModel(model, inputs, labels);
-    console.log('Done Training!!!');
+    //await trainModel(model, inputs, labels);
+    //console.log('Done Training!!!');
 
     // Make some predictions using the model and compare them to the original data
-    testModel(model, data, tensorData);
+    //testModel(model, data, tensorData);
      
-    // Prepare the data and convert to appropriate format for barchart
+    // Prepare the data and convert to appropriate 
+    // format for barchart
     const barchartValues = data.map((d, i) =>({
         index: i,
         value: d.mpg,
@@ -196,7 +195,9 @@ async function run() {
     // Show a barchart of the MPG values
     tfvis.render.barchart(
         {name: 'Bar Chart of the MPG values'},
-        barchartValues, {height: 300, width: 800, fontSize:16,xLabel:"Index", yLabel:"MPG"}, series=['mpg']
+        barchartValues, {height: 300, width: 800, 
+            fontSize:16,xLabel:"Index", yLabel:"MPG"}, 
+            series=['mpg']
     )
     // Show a line chart of the MPG values
     tfvis.render.linechart(
@@ -209,23 +210,18 @@ async function run() {
             width: 800,
         }
     );
-    const myData = [
-        {index: "Akon", value:10},
-        {index:"Ciga", value:20},
-        {index:"Igbo", value:30}
-    ]
-    tfvis.render.barchart({name:"Bar char of the Student's Age"},myData, {xLabel:"User", yLabel:"Age"});
+    // Prepare the data and convert to appropriate 
+    // format for histogram
     const histData = data
     .map(d => d.horsepower);
-    console.log("my histData=="+histData)
-
+    console.log("histData max=="+Math.max(...histData))
+    console.log("histData min=="+Math.min(...histData))
     tfvis.render.histogram({name:"Histogram of the car's MPG"},
         histData,{
-            maxBin:5,
+            maxBin:20,
             height:450,
             fontSize:16
         })
-    
 }
 
 document.addEventListener('DOMContentLoaded', run);
